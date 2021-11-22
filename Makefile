@@ -17,3 +17,6 @@ run:
 
 migrate:
 	${PYTHON} manage.py migrate
+
+tests:
+	${PYTHON} manage.py test

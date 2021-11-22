@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    {% if request.method == "POST" %}
+        Invalid credentials
+    {% endif %}
+    <form action="/login" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button>Sign in</button>
+    </form>
+{% endblock %}
