@@ -2,7 +2,7 @@
 
 {% block body %}
     {% if request.method == "POST" %}
-    Invalid credentials
+        Invalid credentials
     {% endif %}
     <form action="/login" method="post">
         {% csrf_token %}
