@@ -22,5 +22,7 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("sign-in", views.sign_in, name="sign_in"),
     path("sign-up", views.sign_up, name="sign_up"),
+    path("subscriptions", views.subscriptions, name="subscriptions"),
+    path("unsubscribe/<int:followed_user>", views.unsubscribe, name="unsubscribe"),
     path("admin/", admin.site.urls),
 ]

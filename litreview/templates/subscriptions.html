@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <form action="/subscriptions" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button>Subscribe</button>
+    </form>
+    <ul>
+        {% for subscription in subscriptions %}
+            {% url 'unsubscribe' subscription.followed_user.id as url %}
+            <li>{{ subscription.followed_user.username }} <a href="{{ url }}">Unsubscribe</a></li>
+        {% endfor %}
+    </ul>
+    <ul>
+    {% for subscriber in subscribers %}
+        <li>{{ subscriber.user.username }}</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

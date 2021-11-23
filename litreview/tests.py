@@ -1,5 +1,61 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase, Client
+
+from litreview.models import UserFollows
+
+
+class SubscriptionsTestCase(TestCase):
+    def setUp(self):
+        user1 = User.objects.create_user("user+1", "user+1@email.com", "password")
+        user2 = User.objects.create_user("user+2", "user+2@email.com", "password")
+        user3 = User.objects.create_user("user+3", "user+3@email.com", "password")
+        User.objects.create_user("user+4", "user+3@email.com", "password")
+        UserFollows.objects.create(user=user1, followed_user=user2)
+        UserFollows.objects.create(user=user2, followed_user=user3)
+        UserFollows.objects.create(user=user3, followed_user=user1)
+
+    def test_non_logged_user_should_be_show_his_subscriptions(self):
+        client = Client()
+        response = client.get("/subscriptions")
+        assert 302 == response.status_code
+
+    def test_logged_user_should_be_show_his_subscriptions(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/subscriptions")
+        assert 200 == response.status_code
+
+    def test_subscribe_should_be_successful(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.post("/subscriptions", {"username": "user+4"})
+        assert 302 == response.status_code
+
+    def test_subscribe_non_existing_user_should_be_raise_form_error(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.post("/subscriptions", {"username": "user+fail"})
+        assert 200 == response.status_code
+
+    def test_subscribe_user_already_follow_should_be_raise_form_error(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.post("/subscriptions", {"username": "user+2"})
+        assert 200 == response.status_code
+
+    def test_unsubscribe_should_be_successful(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/unsubscribe/2")
+        assert 302 == response.status_code
+        assert 0 == UserFollows.objects.filter(user_id=1).count()
+
+    def test_unsubscribe_non_existing_user_should_be_raise_an_error(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        with self.assertRaises(ObjectDoesNotExist):
+            client.get("/unsubscribe/20")
 
 
 class SignInTestCase(TestCase):

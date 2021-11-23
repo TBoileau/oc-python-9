@@ -4,7 +4,7 @@
     {% if request.method == "POST" %}
         Invalid credentials
     {% endif %}
-    <form action="/login" method="post">
+    <form action="/sign-in" method="post">
         {% csrf_token %}
         {{ form }}
         <button>Sign in</button>
