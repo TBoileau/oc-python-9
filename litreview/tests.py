@@ -38,6 +38,26 @@ class ReviewsTestCase(TestCase):
         assert 302 == response.status_code
         assert 2 == Review.objects.all().count()
 
+    def test_create_review_without_ticket_should_be_successful(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/reviews/create")
+        assert 200 == response.status_code
+        with open(os.path.join(settings.BASE_DIR, "litreview/static/test.png"), "rb") as image:
+            response = client.post(
+                "/reviews/create",
+                {
+                    "headline": "headline",
+                    "body": "body",
+                    "rating": "1",
+                    "title": "Title",
+                    "description": "Description",
+                    "image": image,
+                },
+            )
+            assert 302 == response.status_code
+            assert 2 == Review.objects.all().count()
+
 
 class TicketsTestCase(TestCase):
     def setUp(self):

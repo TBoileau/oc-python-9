@@ -28,5 +28,6 @@ urlpatterns = [
     path("tickets/update/<int:id>", tickets.update, name="ticket_update"),
     path("tickets/delete/<int:id>", tickets.delete, name="ticket_delete"),
     path("reviews/create/<int:ticket_id>", reviews.create, name="reviews_create"),
+    path("reviews/create", reviews.create, name="reviews_create_without_ticket"),
     path("admin/", admin.site.urls),
 ]
