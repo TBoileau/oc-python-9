@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <form action="/tickets/create" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <button>Create</button>
+    </form>
+{% endblock %}

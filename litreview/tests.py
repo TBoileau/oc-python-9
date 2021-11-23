@@ -1,8 +1,84 @@
+import os.path
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase, Client
 
-from litreview.models import UserFollows
+from litreview import settings
+from litreview.models import UserFollows, Ticket
+
+
+class TicketsTestCase(TestCase):
+    def setUp(self):
+        user = User.objects.create_user("user+1", "user+1@email.com", "password")
+        User.objects.create_user("user+2", "user+2@email.com", "password")
+        Ticket.objects.create(title="Title", description="description", user=user).save()
+
+    def test_unlogged_user_create_ticket_should_redirect_to_sign_in(self):
+        client = Client()
+        response = client.get("/tickets/create")
+        assert 302 == response.status_code
+
+    def test_create_ticket_should_be_successful(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/tickets/create")
+        assert 200 == response.status_code
+        with open(os.path.join(settings.BASE_DIR, "litreview/static/test.png"), "rb") as image:
+            response = client.post("/tickets/create", {"title": "Title", "description": "Description", "image": image})
+            assert 302 == response.status_code
+            assert 2 == Ticket.objects.all().count()
+
+    def test_create_ticket_with_empty_title_should_raise_a_form_error(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/tickets/create")
+        assert 200 == response.status_code
+        with open(os.path.join(settings.BASE_DIR, "litreview/static/test.png"), "rb") as image:
+            response = client.post("/tickets/create", {"title": "", "description": "Description", "image": image})
+            assert 200 == response.status_code
+
+    def test_unlogged_user_update_ticket_should_redirect_to_sign_in(self):
+        client = Client()
+        response = client.get("/tickets/update/1")
+        assert 302 == response.status_code
+
+    def test_update_ticket_when_author_is_not_logged_user_should_raise_access_denied(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+2", "password": "password"})
+        response = client.get("/tickets/update/1")
+        assert 403 == response.status_code
+
+    def test_update_ticket_should_be_successful(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/tickets/update/1")
+        assert 200 == response.status_code
+        assert 1 == Ticket.objects.all().count()
+        with open(os.path.join(settings.BASE_DIR, "litreview/static/test.png"), "rb") as image:
+            response = client.post(
+                "/tickets/update/1", {"title": "Title", "description": "Description", "image": image}
+            )
+            assert 302 == response.status_code
+            assert 1 == Ticket.objects.all().count()
+
+    def test_unlogged_user_delete_ticket_should_redirect_to_sign_in(self):
+        client = Client()
+        response = client.get("/tickets/delete/1")
+        assert 302 == response.status_code
+
+    def test_delete_ticket_when_author_is_not_logged_user_should_raise_access_denied(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+2", "password": "password"})
+        response = client.get("/tickets/delete/1")
+        assert 403 == response.status_code
+
+    def test_delete_ticket_should_be_successful(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/tickets/delete/1")
+        assert 302 == response.status_code
+        assert 0 == Ticket.objects.all().count()
 
 
 class SubscriptionsTestCase(TestCase):
