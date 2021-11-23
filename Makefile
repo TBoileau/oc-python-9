@@ -12,6 +12,13 @@ install:
 	pip install --no-cache-dir wheel
 	${PYTHON} -m pip install -r requirements.txt
 
+fix:
+	$(PYTHON) -m black --line-length 120 ./litreview
+	$(PYTHON) -m autopep8 --recursive --in-place --aggressive --max-line-length=120 ./litreview/*
+
+analyse:
+	$(PYTHON) -m flake8 ./litreview
+
 run:
 	${PYTHON} manage.py runserver
 
