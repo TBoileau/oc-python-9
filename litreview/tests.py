@@ -5,7 +5,58 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase, Client
 
 from litreview import settings
-from litreview.models import UserFollows, Ticket
+from litreview.models import UserFollows, Ticket, Review
+
+
+class ReviewsTestCase(TestCase):
+    def setUp(self):
+        User.objects.create_user("user+1", "user+1@email.com", "password")
+        user = User.objects.create_user("user+2", "user+2@email.com", "password")
+        Ticket.objects.create(title="Title", description="description", user=user).save()
+        ticket = Ticket.objects.create(title="Title", description="description", user=user)
+        ticket.save()
+        review = Review.objects.create(ticket=ticket, rating=1, user=user)
+        review.save()
+
+    def test_unlogged_user_create_review_should_redirect_to_sign_in(self):
+        client = Client()
+        response = client.get("/reviews/create/1")
+        assert 302 == response.status_code
+
+    def test_create_review_of_ticket_has_already_reviews_should_raise_an_error(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/reviews/create/2")
+        assert 400 == response.status_code
+
+    def test_create_review_should_be_successful(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/reviews/create/1")
+        assert 200 == response.status_code
+        response = client.post("/reviews/create/1", {"headline": "headline", "body": "body", "rating": "1"})
+        assert 302 == response.status_code
+        assert 2 == Review.objects.all().count()
+
+    def test_create_review_without_ticket_should_be_successful(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/reviews/create")
+        assert 200 == response.status_code
+        with open(os.path.join(settings.BASE_DIR, "litreview/static/test.png"), "rb") as image:
+            response = client.post(
+                "/reviews/create",
+                {
+                    "headline": "headline",
+                    "body": "body",
+                    "rating": "1",
+                    "title": "Title",
+                    "description": "Description",
+                    "image": image,
+                },
+            )
+            assert 302 == response.status_code
+            assert 2 == Review.objects.all().count()
 
 
 class TicketsTestCase(TestCase):
