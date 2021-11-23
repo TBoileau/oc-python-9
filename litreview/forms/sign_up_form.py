@@ -26,9 +26,8 @@ class SignUpForm(forms.Form):
         return self.cleaned_data
 
     def handle(self):
-        user = User.objects.create_user(
+        User.objects.create_user(
             username=self.cleaned_data.get("username"),
             email=self.cleaned_data.get("email"),
             password=self.cleaned_data.get("password"),
         )
-        user.save()

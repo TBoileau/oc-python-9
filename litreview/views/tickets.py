@@ -13,16 +13,12 @@ def create(request):
     if request.method == "POST":
         form = TicketForm(request.POST, request.FILES)
         if form.is_valid():
-            ticket = Ticket.objects.create(user=request.user)
+            ticket = Ticket(user=request.user)
             form.handle(ticket)
             return redirect("home")
     else:
         form = TicketForm()
     return render(request, "tickets/create.html", {"form": form})
-
-
-def read(request, id: int):
-    pass
 
 
 def update(request, id: int):
