@@ -3,7 +3,8 @@
 {% block body %}
     <ul>
         {% for subscription in subscriptions %}
-            <li>{{ subscription.followed_user.username }}</li>
+            {% url 'unsubscribe' subscription.followed_user.id as url %}
+            <li>{{ subscription.followed_user.username }} <a href="{{ url }}">Unsubscribe</a></li>
         {% endfor %}
     </ul>
     <ul>

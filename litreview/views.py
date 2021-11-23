@@ -35,12 +35,21 @@ def sign_in(request):
         form = SignInForm()
     return render(request, "sign_in.html", {"form": form})
 
+
 def subscriptions(request):
     if not request.user.is_authenticated:
-        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+        return redirect("%s?next=%s" % (settings.LOGIN_URL, request.path))
 
     subscriptions = UserFollows.objects.filter(user=request.user)
     subscribers = UserFollows.objects.filter(followed_user=request.user)
 
-    return render(request, "subscriptions.html", {"subscriptions": subscriptions,"subscribers": subscribers})
+    return render(request, "subscriptions.html", {"subscriptions": subscriptions, "subscribers": subscribers})
 
+
+def unsubscribe(request, followed_user: int):
+    if not request.user.is_authenticated:
+        return redirect("%s?next=%s" % (settings.LOGIN_URL, request.path))
+
+    user_follow = UserFollows.objects.get(user=request.user, followed_user_id=followed_user)
+    user_follow.delete()
+    return redirect("/subscriptions")

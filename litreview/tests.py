@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase, Client
 
 from litreview.models import UserFollows
@@ -15,14 +16,28 @@ class SubscriptionsTestCase(TestCase):
 
     def test_non_logged_user_should_be_show_his_subscriptions(self):
         client = Client()
-        response = client.get('/subscriptions')
+        response = client.get("/subscriptions")
         assert 302 == response.status_code
 
     def test_logged_user_should_be_show_his_subscriptions(self):
         client = Client()
         client.post("/sign-in", {"username": "user+1", "password": "password"})
-        response = client.get('/subscriptions')
+        response = client.get("/subscriptions")
         assert 200 == response.status_code
+
+    def test_unsubscribe_should_be_successful(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/unsubscribe/2")
+        assert 302 == response.status_code
+        assert 0 == UserFollows.objects.filter(user_id=1).count()
+
+    def test_unsubscribe_non_existing_user_should_be_raise_an_error(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        with self.assertRaises(ObjectDoesNotExist):
+            client.get("/unsubscribe/20")
+
 
 class SignInTestCase(TestCase):
     def setUp(self):
