@@ -15,6 +15,9 @@ install:
 run:
 	${PYTHON} manage.py runserver
 
+migration:
+	${PYTHON} manage.py makemigrations
+
 migrate:
 	${PYTHON} manage.py migrate
 
