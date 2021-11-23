@@ -62,6 +62,24 @@ class TicketsTestCase(TestCase):
             assert 302 == response.status_code
             assert 1 == Ticket.objects.all().count()
 
+    def test_unlogged_user_delete_ticket_should_redirect_to_sign_in(self):
+        client = Client()
+        response = client.get("/tickets/delete/1")
+        assert 302 == response.status_code
+
+    def test_delete_ticket_when_author_is_not_logged_user_should_raise_access_denied(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+2", "password": "password"})
+        response = client.get("/tickets/delete/1")
+        assert 403 == response.status_code
+
+    def test_delete_ticket_should_be_successful(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/tickets/delete/1")
+        assert 302 == response.status_code
+        assert 0 == Ticket.objects.all().count()
+
 
 class SubscriptionsTestCase(TestCase):
     def setUp(self):

@@ -45,4 +45,13 @@ def update(request, id: int):
 
 
 def delete(request, id: int):
-    pass
+    if not request.user.is_authenticated:
+        return redirect("%s?next=%s" % (settings.LOGIN_URL, request.path))
+
+    ticket = Ticket.objects.get(id=id)
+
+    if request.user != ticket.user:
+        raise PermissionDenied()
+
+    ticket.delete()
+    return redirect("home")

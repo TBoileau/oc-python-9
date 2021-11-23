@@ -27,6 +27,6 @@ urlpatterns = [
     path("tickets/create", tickets.create, name="ticket_create"),
     path("tickets/read/<int:id>", tickets.read, name="ticket_update"),
     path("tickets/update/<int:id>", tickets.update, name="ticket_update"),
-    path("tickets.delete/<int:id>", tickets.delete, name="ticket_delete"),
+    path("tickets/delete/<int:id>", tickets.delete, name="ticket_delete"),
     path("admin/", admin.site.urls),
 ]
