@@ -1,8 +1,8 @@
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 
-from src.forms.sign_in_form import SignInForm
-from src.forms.sign_up_form import SignUpForm
+from litreview.forms.sign_in_form import SignInForm
+from litreview.forms.sign_up_form import SignUpForm
 
 
 def home(request):

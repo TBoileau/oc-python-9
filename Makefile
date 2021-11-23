@@ -15,8 +15,18 @@ install:
 run:
 	${PYTHON} manage.py runserver
 
+migration:
+	${PYTHON} manage.py makemigrations
+
 migrate:
 	${PYTHON} manage.py migrate
+
+database:
+	rm db.sqlite3
+	make migrate
+	${PYTHON} manage.py loaddata users
+	${PYTHON} manage.py loaddata tickets
+	${PYTHON} manage.py loaddata reviews
 
 tests:
 	${PYTHON} manage.py test
