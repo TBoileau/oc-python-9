@@ -19,8 +19,8 @@ from django.urls import path
 from litreview import views
 
 urlpatterns = [
-    path('', views.home, name='home'),
-    path('sign-in', views.sign_in, name='sign_in'),
-    path('sign-up', views.sign_up, name='sign_up'),
-    path('admin/', admin.site.urls),
+    path("", views.home, name="home"),
+    path("sign-in", views.sign_in, name="sign_in"),
+    path("sign-up", views.sign_up, name="sign_up"),
+    path("admin/", admin.site.urls),
 ]

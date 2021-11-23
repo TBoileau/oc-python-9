@@ -5,13 +5,16 @@ from .models.user_follows import UserFollows
 
 
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description', 'user', 'image', 'time_created')
+    list_display = ("title", "description", "user", "image", "time_created")
+
 
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('ticket', 'rating', 'user', 'headline', 'body', 'time_created')
+    list_display = ("ticket", "rating", "user", "headline", "body", "time_created")
+
 
 class UserFollowsAdmin(admin.ModelAdmin):
-    list_display = ('user', 'followed_user')
+    list_display = ("user", "followed_user")
+
 
 admin.site.register(Ticket, TicketAdmin)
 admin.site.register(Review, ReviewAdmin)
