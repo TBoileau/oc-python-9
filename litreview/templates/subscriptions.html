@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
 {% block body %}
+    <form action="/subscriptions" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button>Subscribe</button>
+    </form>
     <ul>
         {% for subscription in subscriptions %}
             {% url 'unsubscribe' subscription.followed_user.id as url %}

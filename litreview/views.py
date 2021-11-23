@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 
 from litreview.forms.sign_in_form import SignInForm
 from litreview.forms.sign_up_form import SignUpForm
+from litreview.forms.subscribe_form import SubscribeForm
 from litreview.models import UserFollows
 
 
@@ -40,10 +41,20 @@ def subscriptions(request):
     if not request.user.is_authenticated:
         return redirect("%s?next=%s" % (settings.LOGIN_URL, request.path))
 
+    if request.method == "POST":
+        form = SubscribeForm(request.POST)
+        if form.is_valid():
+            form.handle(request.user)
+            return redirect("subscriptions")
+    else:
+        form = SubscribeForm()
+
     subscriptions = UserFollows.objects.filter(user=request.user)
     subscribers = UserFollows.objects.filter(followed_user=request.user)
 
-    return render(request, "subscriptions.html", {"subscriptions": subscriptions, "subscribers": subscribers})
+    return render(
+        request, "subscriptions.html", {"form": form, "subscriptions": subscriptions, "subscribers": subscribers}
+    )
 
 
 def unsubscribe(request, followed_user: int):
