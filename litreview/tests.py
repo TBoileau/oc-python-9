@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 from django.test import TestCase, Client
 
 
-
 class SignInTestCase(TestCase):
     def setUp(self):
         User.objects.create_user('user', 'user@email.com', 'password')
