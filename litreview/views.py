@@ -1,8 +1,10 @@
+from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 
 from litreview.forms.sign_in_form import SignInForm
 from litreview.forms.sign_up_form import SignUpForm
+from litreview.models import UserFollows
 
 
 def home(request):
@@ -32,3 +34,13 @@ def sign_in(request):
     else:
         form = SignInForm()
     return render(request, "sign_in.html", {"form": form})
+
+def subscriptions(request):
+    if not request.user.is_authenticated:
+        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+
+    subscriptions = UserFollows.objects.filter(user=request.user)
+    subscribers = UserFollows.objects.filter(followed_user=request.user)
+
+    return render(request, "subscriptions.html", {"subscriptions": subscriptions,"subscribers": subscribers})
+

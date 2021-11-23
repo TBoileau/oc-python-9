@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <ul>
+        {% for subscription in subscriptions %}
+            <li>{{ subscription.followed_user.username }}</li>
+        {% endfor %}
+    </ul>
+    <ul>
+    {% for subscriber in subscribers %}
+        <li>{{ subscriber.user.username }}</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

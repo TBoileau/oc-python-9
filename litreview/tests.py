@@ -1,6 +1,28 @@
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 
+from litreview.models import UserFollows
+
+
+class SubscriptionsTestCase(TestCase):
+    def setUp(self):
+        user1 = User.objects.create_user("user+1", "user+1@email.com", "password")
+        user2 = User.objects.create_user("user+2", "user+2@email.com", "password")
+        user3 = User.objects.create_user("user+3", "user+3@email.com", "password")
+        UserFollows.objects.create(user=user1, followed_user=user2)
+        UserFollows.objects.create(user=user2, followed_user=user3)
+        UserFollows.objects.create(user=user3, followed_user=user1)
+
+    def test_non_logged_user_should_be_show_his_subscriptions(self):
+        client = Client()
+        response = client.get('/subscriptions')
+        assert 302 == response.status_code
+
+    def test_logged_user_should_be_show_his_subscriptions(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get('/subscriptions')
+        assert 200 == response.status_code
 
 class SignInTestCase(TestCase):
     def setUp(self):
