@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 
 from litreview.forms.ticket_form import TicketForm
@@ -25,7 +26,22 @@ def read(request, id: int):
 
 
 def update(request, id: int):
-    pass
+    if not request.user.is_authenticated:
+        return redirect("%s?next=%s" % (settings.LOGIN_URL, request.path))
+
+    ticket = Ticket.objects.get(id=id)
+
+    if request.user != ticket.user:
+        raise PermissionDenied()
+
+    if request.method == "POST":
+        form = TicketForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.handle(ticket)
+            return redirect("home")
+    else:
+        form = TicketForm({"title": ticket.title, "description": ticket.description})
+    return render(request, "tickets/update.html", {"form": form, "ticket": ticket})
 
 
 def delete(request, id: int):
