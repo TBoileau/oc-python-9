@@ -16,13 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from litreview import views
+from litreview.views import tickets, security, default, subscriptions
 
 urlpatterns = [
-    path("", views.home, name="home"),
-    path("sign-in", views.sign_in, name="sign_in"),
-    path("sign-up", views.sign_up, name="sign_up"),
-    path("subscriptions", views.subscriptions, name="subscriptions"),
-    path("unsubscribe/<int:followed_user>", views.unsubscribe, name="unsubscribe"),
+    path("", default.home, name="home"),
+    path("sign-in", security.sign_in, name="sign_in"),
+    path("sign-up", security.sign_up, name="sign_up"),
+    path("subscriptions", subscriptions.subscriptions, name="subscriptions"),
+    path("unsubscribe/<int:followed_user>", subscriptions.unsubscribe, name="unsubscribe"),
+    path("tickets/create", tickets.create, name="ticket_create"),
+    path("tickets/read/<int:id>", tickets.read, name="ticket_update"),
+    path("tickets/update/<int:id>", tickets.update, name="ticket_update"),
+    path("tickets.delete/<int:id>", tickets.delete, name="ticket_delete"),
     path("admin/", admin.site.urls),
 ]
