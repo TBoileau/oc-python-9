@@ -1,5 +1,13 @@
 {% extends 'base.html' %}
 
 {% block body %}
-   Hello world
+    <ul>
+    {% for post in posts %}
+        {% if post.content_type == 'TICKET' %}
+            <li>Ticket : {{ post.pk }}</li>
+        {% else %}
+            <li>Review :{{ post.pk }}</li>
+        {% endif %}
+    {% endfor %}
+    </ul>
 {% endblock %}
