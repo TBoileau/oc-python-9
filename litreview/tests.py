@@ -8,6 +8,34 @@ from litreview import settings
 from litreview.models import UserFollows, Ticket, Review
 
 
+class DefaultTestCase(TestCase):
+    def setUp(self):
+        user1 = User.objects.create_user("user+1", "user+1@email.com", "password")
+        user2 = User.objects.create_user("user+2", "user+2@email.com", "password")
+        Ticket.objects.create(title="Title", description="description", user=user2).save()
+        ticket = Ticket.objects.create(title="Title", description="description", user=user1)
+        ticket.save()
+        review = Review.objects.create(ticket=ticket, rating=1, user=user2)
+        review.save()
+
+    def test_home_should_be_successful(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/")
+        assert 200 == response.status_code
+
+    def test_profile_should_be_successful(self):
+        client = Client()
+        client.post("/sign-in", {"username": "user+1", "password": "password"})
+        response = client.get("/profile")
+        assert 200 == response.status_code
+
+    def test_profile_should_redirect_to_sign_in(self):
+        client = Client()
+        response = client.get("/profile")
+        assert 302 == response.status_code
+
+
 class ReviewsTestCase(TestCase):
     def setUp(self):
         User.objects.create_user("user+1", "user+1@email.com", "password")

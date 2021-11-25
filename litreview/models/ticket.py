@@ -16,3 +16,6 @@ class Ticket(models.Model):
         upload_to=lambda instance, filename: f"{app_settings.UPLOAD_DIR}/{uuid.uuid4()}_{filename}",
     )
     time_created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "ticket"

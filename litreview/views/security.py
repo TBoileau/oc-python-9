@@ -13,7 +13,7 @@ def sign_up(request):
             return redirect("sign_in")
     else:
         form = SignUpForm()
-    return render(request, "sign_up.html", {"form": form})
+    return render(request, "security/sign_up.html", {"form": form})
 
 
 def sign_in(request):
@@ -27,4 +27,4 @@ def sign_in(request):
                 return redirect("home")
     else:
         form = SignInForm()
-    return render(request, "sign_in.html", {"form": form})
+    return render(request, "security/sign_in.html", {"form": form})
